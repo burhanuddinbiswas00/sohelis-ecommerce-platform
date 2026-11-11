@@ -218,3 +218,4 @@ export default function ProductDetail({ productId, onBack, navigate }) {
     </div>
   );
 }
+

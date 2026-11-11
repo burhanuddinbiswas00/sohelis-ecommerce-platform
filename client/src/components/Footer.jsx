@@ -77,6 +77,11 @@ export default function Footer({ navigate }) {
             <h4 className="text-white font-medium text-sm mb-4">গ্রাহক সহায়তা</h4>
             <ul className="space-y-2 text-xs text-stone-400">
               <li>
+                <button onClick={() => navigate('/track-order')} className="hover:text-amber-400 transition">
+                  অর্ডার ট্র্যাকিং (Track Order)
+                </button>
+              </li>
+              <li>
                 <button onClick={() => navigate('/about')} className="hover:text-amber-400 transition">
                   আমাদের গল্প (About Us)
                 </button>
@@ -127,3 +132,4 @@ export default function Footer({ navigate }) {
     </footer>
   );
 }
+

@@ -241,6 +241,20 @@ const runE2ETests = async () => {
     }
     console.log('PASS: Order Status Transition\n');
 
+    // 10b. Customer Track Order: GET /api/orders/track/:query
+    console.log(`[Test 10b] GET /api/orders/track/${placedOrderId} (Customer Order Tracking)`);
+    const trackRes = await request({
+      hostname: '127.0.0.1',
+      port,
+      path: `/api/orders/track/${placedOrderId}`,
+      method: 'GET',
+    });
+    console.log(`Status: ${trackRes.status}, Found: ${trackRes.data?.count} order(s), Status:`, trackRes.data?.orders?.[0]?.status);
+    if (trackRes.status !== 200 || trackRes.data?.orders?.[0]?.status !== 'Shipped') {
+      throw new Error('Customer order tracking check failed');
+    }
+    console.log('PASS: Customer Real-time Order Tracking\n');
+
     // 11. Admin Delete Test Product: DELETE /api/products/:id
     console.log(`[Test 11] DELETE /api/products/${createdProductId} (Admin Clean-up)`);
     const deleteRes = await request({

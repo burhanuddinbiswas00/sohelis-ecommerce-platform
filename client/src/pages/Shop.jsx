@@ -172,3 +172,4 @@ export default function Shop({ initialCategory, onSelectProduct }) {
     </div>
   );
 }
+

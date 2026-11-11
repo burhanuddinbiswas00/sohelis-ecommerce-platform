@@ -233,6 +233,48 @@ const getOrderById = async (req, res, next) => {
   }
 };
 
+// @desc    Track order by Order ID or Phone number
+// @route   GET /api/orders/track/:query
+// @access  Public
+const trackOrder = async (req, res, next) => {
+  try {
+    const rawQuery = (req.params.query || '').trim();
+    if (!rawQuery) {
+      res.status(400);
+      throw new Error('Please provide an Order ID or Phone number to track');
+    }
+
+    if (isConnected()) {
+      let queryFilter = { phone: rawQuery };
+      if (mongoose.Types.ObjectId.isValid(rawQuery)) {
+        queryFilter = { $or: [{ _id: rawQuery }, { phone: rawQuery }] };
+      }
+
+      const orders = await Order.find(queryFilter).sort({ createdAt: -1 });
+      return res.json({
+        success: true,
+        count: orders.length,
+        orders,
+      });
+    }
+
+    // In-memory fallback
+    const matched = inMemOrders.filter(
+      (o) =>
+        String(o._id).toLowerCase() === rawQuery.toLowerCase() ||
+        o.phone.trim() === rawQuery
+    );
+
+    res.json({
+      success: true,
+      count: matched.length,
+      orders: matched,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // @desc    Update order status
 // @route   PUT /api/orders/:id/status
 // @access  Private/Admin
@@ -305,5 +347,6 @@ module.exports = {
   createOrder,
   getAllOrders,
   getOrderById,
+  trackOrder,
   updateOrderStatus,
 };

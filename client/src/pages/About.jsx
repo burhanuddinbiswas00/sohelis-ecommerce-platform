@@ -95,3 +95,4 @@ export default function About({ navigate }) {
     </div>
   );
 }
+

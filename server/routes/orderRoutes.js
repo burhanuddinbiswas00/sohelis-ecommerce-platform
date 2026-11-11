@@ -4,6 +4,7 @@ const {
   createOrder,
   getAllOrders,
   getOrderById,
+  trackOrder,
   updateOrderStatus,
 } = require('../controllers/orderController');
 const { protect, admin } = require('../middleware/authMiddleware');
@@ -11,6 +12,9 @@ const { protect, admin } = require('../middleware/authMiddleware');
 router.route('/')
   .post(createOrder)
   .get(protect, admin, getAllOrders);
+
+router.route('/track/:query')
+  .get(trackOrder);
 
 router.route('/:id')
   .get(getOrderById);

@@ -13,6 +13,7 @@ export default function Navbar({ currentPath, navigate }) {
     { label: 'শাড়ি কালেকশন', path: '/shop?category=Sari' },
     { label: 'থ্রি-পিস', path: '/shop?category=Three-Piece' },
     { label: 'সকল পণ্য', path: '/shop' },
+    { label: 'অর্ডার ট্র্যাক', path: '/track-order' },
     { label: 'আমাদের গল্প', path: '/about' },
   ];
 
@@ -157,3 +158,4 @@ export default function Navbar({ currentPath, navigate }) {
     </header>
   );
 }
+

@@ -73,6 +73,11 @@ export const getOrderById = async (id) => {
   return response.data;
 };
 
+export const trackOrder = async (query) => {
+  const response = await api.get(`/orders/track/${encodeURIComponent(query)}`);
+  return response.data;
+};
+
 export const updateOrderStatus = async (id, status, token) => {
   const config = { headers: { Authorization: `Bearer ${token}` } };
   const response = await api.put(`/orders/${id}/status`, { status }, config);
@@ -92,3 +97,4 @@ export const getMe = async (token) => {
 };
 
 export default api;
+

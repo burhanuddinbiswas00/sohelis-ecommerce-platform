@@ -9,6 +9,7 @@ import Checkout from './pages/Checkout';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import About from './pages/About';
+import TrackOrder from './pages/TrackOrder';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 
@@ -84,6 +85,8 @@ export default function App() {
         return <AdminDashboard navigate={navigate} />;
       case '/admin/login':
         return <AdminLogin navigate={navigate} />;
+      case '/track-order':
+        return <TrackOrder navigate={navigate} />;
       case '/about':
         return <About navigate={navigate} />;
       default:
@@ -103,3 +106,4 @@ export default function App() {
     </AuthProvider>
   );
 }
+

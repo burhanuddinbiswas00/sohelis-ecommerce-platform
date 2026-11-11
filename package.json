@@ -1,0 +1,24 @@
+{
+  "name": "sohelis-ecommerce-platform",
+  "version": "1.0.0",
+  "description": "Full-stack MERN e-commerce web platform for Soheli's (Traditional Nakshi Kantha Fashion Brand)",
+  "scripts": {
+    "start": "node server/server.js",
+    "server": "npm --prefix server start",
+    "client": "npm --prefix client dev",
+    "test": "npm --prefix server test",
+    "build": "npm --prefix client run build",
+    "seed": "npm --prefix server run seed"
+  },
+  "keywords": [
+    "mern",
+    "ecommerce",
+    "nakshi-kantha",
+    "react",
+    "express",
+    "mongoose",
+    "tailwind"
+  ],
+  "author": "Soheli's Fashion Brand",
+  "license": "ISC"
+}
