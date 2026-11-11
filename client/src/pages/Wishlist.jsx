@@ -104,3 +104,4 @@ export default function Wishlist({ navigate, onSelectProduct }) {
     </div>
   );
 }
+

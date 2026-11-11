@@ -13,6 +13,7 @@ import {
   CheckCircle,
   Search,
   Printer,
+  Download,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -94,6 +95,38 @@ export default function AdminDashboard({ navigate }) {
     } finally {
       setProductsLoading(false);
     }
+  };
+
+  const exportToCourierCSV = () => {
+    if (!orders || orders.length === 0) {
+      alert('এক্সপোর্ট করার মতো কোনো অর্ডার পাওয়া যায়নি।');
+      return;
+    }
+
+    const headers = ['Invoice ID', 'Customer Name', 'Phone', 'Address', 'District', 'COD Amount (BDT)', 'Items Summary', 'Payment Method', 'Notes', 'Date'];
+    const rows = orders.map((o) => [
+      `"${o._id}"`,
+      `"${o.customerName.replace(/"/g, '""')}"`,
+      `"${o.phone}"`,
+      `"${o.address.replace(/"/g, '""')}"`,
+      `"${o.district}"`,
+      o.totalAmount,
+      `"${o.items.map((i) => `${i.name} (x${i.quantity})`).join('; ')}"`,
+      `"${o.paymentMethod}"`,
+      `"${(o.notes || '').replace(/"/g, '""')}"`,
+      `"${new Date(o.createdAt).toISOString().split('T')[0]}"`,
+    ]);
+
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `sohelis_courier_orders_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showFeedback('কুরিয়ার এক্সেল/CSV ফাইল সফলভাবে ডাউনলোড হয়েছে।');
   };
 
   const handleStatusChange = async (orderId, newStatus) => {
@@ -305,13 +338,25 @@ export default function AdminDashboard({ navigate }) {
               ))}
             </div>
 
-            <button
-              onClick={fetchOrders}
-              className="text-xs flex items-center gap-1.5 text-stone-600 hover:text-stone-900 bg-white border border-stone-300 px-3 py-1.5 rounded-lg"
-            >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>রিফ্রেশ</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={exportToCourierCSV}
+                className="text-xs flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-medium px-3.5 py-1.5 rounded-lg shadow-sm transition"
+                title="Export current orders to CSV for RedX, Pathao, or Steadfast courier upload"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>কুরিয়ার CSV এক্সপোর্ট</span>
+              </button>
+
+              <button
+                onClick={fetchOrders}
+                className="text-xs flex items-center gap-1.5 text-stone-600 hover:text-stone-900 bg-white border border-stone-300 px-3 py-1.5 rounded-lg"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>রিফ্রেশ</span>
+              </button>
+            </div>
           </div>
 
           {ordersLoading ? (
