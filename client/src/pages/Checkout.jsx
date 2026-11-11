@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, ShieldCheck, Truck, ArrowLeft, Loader2 } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, Truck, ArrowLeft, Loader2, Printer } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { createOrder } from '../services/api';
 
@@ -149,6 +149,13 @@ export default function Checkout({ navigate }) {
           </div>
 
           <div className="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => window.print()}
+              className="flex items-center justify-center gap-1.5 border border-stone-800 text-stone-900 px-5 py-3 rounded-lg text-xs font-medium hover:bg-stone-50 transition"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>রসিদ প্রিন্ট করুন</span>
+            </button>
             <button
               onClick={() => navigate('/shop')}
               className="bg-stone-900 text-amber-50 px-6 py-3 rounded-lg text-xs font-medium hover:bg-stone-800 transition"
