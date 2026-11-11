@@ -10,8 +10,10 @@ import AdminDashboard from './pages/AdminDashboard';
 import AdminLogin from './pages/AdminLogin';
 import About from './pages/About';
 import TrackOrder from './pages/TrackOrder';
+import Wishlist from './pages/Wishlist';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { WishlistProvider } from './context/WishlistContext';
 
 export default function App() {
   const [currentPath, setCurrentPath] = useState(() => window.location.pathname + window.location.search);
@@ -87,6 +89,8 @@ export default function App() {
         return <AdminLogin navigate={navigate} />;
       case '/track-order':
         return <TrackOrder navigate={navigate} />;
+      case '/wishlist':
+        return <Wishlist navigate={navigate} onSelectProduct={handleSelectProduct} />;
       case '/about':
         return <About navigate={navigate} />;
       default:
@@ -96,13 +100,15 @@ export default function App() {
 
   return (
     <AuthProvider>
-      <CartProvider>
-        <div className="min-h-screen flex flex-col bg-[#faf8f5]">
-          <Navbar currentPath={currentPath} navigate={navigate} />
-          <main className="flex-1">{renderPage()}</main>
-          <Footer navigate={navigate} />
-        </div>
-      </CartProvider>
+      <WishlistProvider>
+        <CartProvider>
+          <div className="min-h-screen flex flex-col bg-[#faf8f5]">
+            <Navbar currentPath={currentPath} navigate={navigate} />
+            <main className="flex-1">{renderPage()}</main>
+            <Footer navigate={navigate} />
+          </div>
+        </CartProvider>
+      </WishlistProvider>
     </AuthProvider>
   );
 }

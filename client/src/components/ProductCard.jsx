@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Check } from 'lucide-react';
+import { ShoppingBag, Check, Heart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function ProductCard({ product, onSelectProduct }) {
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const [added, setAdded] = useState(false);
 
   const handleAddToCart = (e) => {
@@ -14,7 +16,13 @@ export default function ProductCard({ product, onSelectProduct }) {
     setTimeout(() => setAdded(false), 1500);
   };
 
+  const handleWishlistClick = (e) => {
+    e.stopPropagation();
+    toggleWishlist(product);
+  };
+
   const isOutOfStock = product.stock <= 0;
+  const isFavorite = isInWishlist(product._id);
 
   return (
     <div
@@ -39,13 +47,23 @@ export default function ProductCard({ product, onSelectProduct }) {
             : product.category}
         </span>
 
+        {/* Wishlist Heart Toggle */}
+        <button
+          type="button"
+          onClick={handleWishlistClick}
+          aria-label="Wishlist toggle"
+          className="absolute top-3 right-3 p-2 rounded-full bg-white/90 backdrop-blur-md text-stone-700 hover:text-ethnic-red transition shadow-sm z-10"
+        >
+          <Heart className={`w-4 h-4 transition ${isFavorite ? 'fill-red-600 text-red-600' : 'text-stone-600'}`} />
+        </button>
+
         {/* Stock status badge */}
         {isOutOfStock ? (
-          <span className="absolute top-3 right-3 bg-red-600/90 text-white text-[10px] px-2.5 py-1 rounded-full font-semibold">
+          <span className="absolute bottom-3 right-3 bg-red-600/90 text-white text-[10px] px-2.5 py-1 rounded-full font-semibold">
             স্টক শেষ
           </span>
         ) : product.stock <= 3 ? (
-          <span className="absolute top-3 right-3 bg-amber-500/90 text-white text-[10px] px-2 py-0.5 rounded-full font-medium">
+          <span className="absolute bottom-3 right-3 bg-amber-500/90 text-white text-[10px] px-2 py-0.5 rounded-full font-medium">
             মাত্র {product.stock} টি বাকি
           </span>
         ) : null}

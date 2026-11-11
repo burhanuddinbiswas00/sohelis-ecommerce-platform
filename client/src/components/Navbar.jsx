@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { ShoppingBag, Heart, Menu, X, ShieldCheck, Sparkles } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
+import { useWishlist } from '../context/WishlistContext';
 
 export default function Navbar({ currentPath, navigate }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { cartCount } = useCart();
+  const { wishlistCount } = useWishlist();
   const { isAuthenticated, logout } = useAuth();
 
   const navLinks = [
@@ -107,6 +109,21 @@ export default function Navbar({ currentPath, navigate }) {
               <ShieldCheck className="w-4 h-4" />
             </button>
           )}
+
+          {/* Wishlist Icon */}
+          <button
+            onClick={() => handleNav('/wishlist')}
+            aria-label="Wishlist"
+            className="p-2 text-stone-700 hover:text-ethnic-red transition relative focus:outline-none"
+            title="পছন্দের তালিকা (Wishlist)"
+          >
+            <Heart className="w-5 h-5 sm:w-6 sm:h-6" />
+            {wishlistCount > 0 && (
+              <span className="absolute top-1 right-1 bg-stone-900 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                {wishlistCount}
+              </span>
+            )}
+          </button>
 
           {/* Cart Icon */}
           <button
