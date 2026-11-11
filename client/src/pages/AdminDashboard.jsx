@@ -12,6 +12,7 @@ import {
   AlertCircle,
   CheckCircle,
   Search,
+  Printer,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -32,6 +33,7 @@ export default function AdminDashboard({ navigate }) {
   const [orderStats, setOrderStats] = useState(null);
   const [orderFilter, setOrderFilter] = useState('All');
   const [ordersLoading, setOrdersLoading] = useState(true);
+  const [selectedInvoiceOrder, setSelectedInvoiceOrder] = useState(null);
 
   // Products State
   const [products, setProducts] = useState([]);
@@ -333,6 +335,16 @@ export default function AdminDashboard({ navigate }) {
                     </div>
 
                     <div className="flex items-center gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedInvoiceOrder(ord)}
+                        className="flex items-center gap-1.5 text-xs bg-stone-100 hover:bg-stone-200 text-stone-800 px-3 py-1.5 rounded-lg border border-stone-200 transition"
+                        title="Print Packaging Slip / Invoice"
+                      >
+                        <Printer className="w-3.5 h-3.5 text-stone-600" />
+                        <span>ইনভয়েস</span>
+                      </button>
+
                       <div>
                         <span className="text-[10px] text-stone-400 block sm:text-right">স্ট্যাটাস পরিবর্তন</span>
                         <select
@@ -623,6 +635,108 @@ export default function AdminDashboard({ navigate }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Printable Packaging Slip & Invoice Modal */}
+      {selectedInvoiceOrder && (
+        <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl max-h-[95vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-stone-200 pb-3 print:hidden">
+              <span className="text-xs uppercase tracking-wider text-stone-500 font-semibold">
+                ডেলিভারি প্যাকেজিং স্লিপ ও ইনভয়েস
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="flex items-center gap-1.5 text-xs bg-stone-900 text-white px-3.5 py-1.5 rounded-lg hover:bg-stone-800 transition"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  <span>প্রিন্ট করুন</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedInvoiceOrder(null)}
+                  className="p-1.5 text-stone-400 hover:text-stone-700 font-bold text-sm"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Printable Content Body */}
+            <div className="border border-stone-300 p-6 rounded-xl space-y-6 text-stone-800">
+              {/* Header */}
+              <div className="flex justify-between items-start border-b border-stone-300 pb-4">
+                <div>
+                  <h2 className="font-serif text-2xl font-bold text-stone-900">Soheli's</h2>
+                  <p className="text-[10px] uppercase tracking-widest text-stone-500">Heritage Woven Modern</p>
+                  <p className="text-xs text-stone-600 mt-1">বনানী, ঢাকা - ১২১৩ | হটলাইন: +880 1711-000000</p>
+                </div>
+                <div className="text-right text-xs">
+                  <p className="font-mono font-bold text-stone-900">ইনভয়েস নং: #{selectedInvoiceOrder._id.slice(-6).toUpperCase()}</p>
+                  <p className="text-stone-500">তারিখ: {new Date(selectedInvoiceOrder.createdAt).toLocaleDateString()}</p>
+                  <p className="font-semibold text-ethnic-red mt-1">ক্যাশ অন ডেলিভারি স্লিপ</p>
+                </div>
+              </div>
+
+              {/* Recipient Details */}
+              <div className="grid grid-cols-2 gap-4 text-xs bg-stone-50 p-3.5 rounded-lg border border-stone-200">
+                <div>
+                  <span className="text-[10px] text-stone-400 block uppercase font-bold">গ্রাহকের তথ্য (To):</span>
+                  <p className="font-bold text-stone-900 text-sm mt-0.5">{selectedInvoiceOrder.customerName}</p>
+                  <p className="font-semibold text-stone-800">ফোন: {selectedInvoiceOrder.phone}</p>
+                </div>
+                <div>
+                  <span className="text-[10px] text-stone-400 block uppercase font-bold">ডেলিভারি ঠিকানা:</span>
+                  <p className="text-stone-800">{selectedInvoiceOrder.address}</p>
+                  <p className="font-medium text-stone-700">জেলা/সিটি: {selectedInvoiceOrder.district}</p>
+                </div>
+              </div>
+
+              {/* Items Table */}
+              <table className="w-full text-left text-xs border border-stone-200">
+                <thead className="bg-stone-100 border-b border-stone-200 text-stone-900 font-bold">
+                  <tr>
+                    <th className="p-2.5">বিবরণ</th>
+                    <th className="p-2.5 text-center">পরিমাণ</th>
+                    <th className="p-2.5 text-right">একক মূল্য</th>
+                    <th className="p-2.5 text-right">মোট</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-200">
+                  {selectedInvoiceOrder.items.map((it, idx) => (
+                    <tr key={idx}>
+                      <td className="p-2.5 font-medium">{it.name}</td>
+                      <td className="p-2.5 text-center">{it.quantity}</td>
+                      <td className="p-2.5 text-right font-mono">৳ {it.price.toLocaleString('en-IN')}</td>
+                      <td className="p-2.5 text-right font-mono font-semibold">৳ {(it.price * it.quantity).toLocaleString('en-IN')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {/* Summary Totals */}
+              <div className="flex justify-end text-xs">
+                <div className="w-64 space-y-1.5 border-t border-stone-300 pt-2">
+                  <div className="flex justify-between">
+                    <span className="text-stone-600">ডেলিভারি চার্জ:</span>
+                    <span className="font-mono">৳ {selectedInvoiceOrder.shippingFee || 80}</span>
+                  </div>
+                  <div className="flex justify-between font-bold text-sm text-stone-950 border-t border-stone-200 pt-1">
+                    <span>সংগ্রহযোগ্য বিল (COD):</span>
+                    <span className="text-ethnic-red font-mono font-bold">৳ {selectedInvoiceOrder.totalAmount?.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer Note */}
+              <div className="border-t border-dashed border-stone-300 pt-3 text-[10px] text-stone-500 text-center">
+                <p>পণ্য গ্রহণের সময় অনুগ্রহ করে চেক করে নিন। সোহেলিসের সাথে থাকার জন্য ধন্যবাদ!</p>
+              </div>
+            </div>
           </div>
         </div>
       )}
