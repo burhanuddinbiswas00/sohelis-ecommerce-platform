@@ -6,7 +6,7 @@ import { useWishlist } from '../context/WishlistContext';
 
 export default function Navbar({ currentPath, navigate }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { cartCount } = useCart();
+  const { cartCount, openDrawer } = useCart();
   const { wishlistCount } = useWishlist();
   const { isAuthenticated, logout } = useAuth();
 
@@ -127,9 +127,10 @@ export default function Navbar({ currentPath, navigate }) {
 
           {/* Cart Icon */}
           <button
-            onClick={() => handleNav('/cart')}
+            onClick={openDrawer}
             aria-label="Shopping Cart"
             className="p-2 text-stone-800 hover:text-ethnic-red transition relative focus:outline-none"
+            title="শপিং ব্যাগ দেখুন"
           >
             <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6" />
             {cartCount > 0 && (

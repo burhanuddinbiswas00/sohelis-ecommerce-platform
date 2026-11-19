@@ -13,6 +13,7 @@ export const CartProvider = ({ children }) => {
   });
 
   const [deliveryDistrict, setDeliveryDistrict] = useState('Dhaka');
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -22,7 +23,7 @@ export const CartProvider = ({ children }) => {
     }
   }, [cart]);
 
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = (product, quantity = 1, openDrawerImmediately = true) => {
     setCart((prevCart) => {
       const existingIndex = prevCart.findIndex((item) => item.product._id === product._id);
       if (existingIndex > -1) {
@@ -38,6 +39,10 @@ export const CartProvider = ({ children }) => {
         return [...prevCart, { product, quantity: Math.min(quantity, product.stock || 1) }];
       }
     });
+
+    if (openDrawerImmediately) {
+      setIsDrawerOpen(true);
+    }
   };
 
   const removeFromCart = (productId) => {
@@ -65,6 +70,9 @@ export const CartProvider = ({ children }) => {
     localStorage.removeItem('soheli_cart');
   };
 
+  const openDrawer = () => setIsDrawerOpen(true);
+  const closeDrawer = () => setIsDrawerOpen(false);
+
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const shippingFee = deliveryDistrict === 'Dhaka' ? 80 : 150;
@@ -80,6 +88,10 @@ export const CartProvider = ({ children }) => {
         grandTotal,
         deliveryDistrict,
         setDeliveryDistrict,
+        isDrawerOpen,
+        setIsDrawerOpen,
+        openDrawer,
+        closeDrawer,
         addToCart,
         removeFromCart,
         updateQuantity,
@@ -98,4 +110,3 @@ export const useCart = () => {
   }
   return context;
 };
-

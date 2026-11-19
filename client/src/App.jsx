@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import CartDrawer from './components/CartDrawer';
 import Home from './pages/Home';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
@@ -106,6 +107,7 @@ export default function App() {
             <Navbar currentPath={currentPath} navigate={navigate} />
             <main className="flex-1">{renderPage()}</main>
             <Footer navigate={navigate} />
+            <CartDrawer navigate={navigate} />
           </div>
         </CartProvider>
       </WishlistProvider>

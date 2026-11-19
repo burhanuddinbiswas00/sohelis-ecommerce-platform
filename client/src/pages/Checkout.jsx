@@ -20,6 +20,8 @@ export default function Checkout({ navigate }) {
     address: '',
     district: deliveryDistrict || 'Dhaka',
     paymentMethod: 'Cash on Delivery',
+    trxId: '',
+    bkashSenderNumber: '',
     notes: '',
   });
 
@@ -66,10 +68,24 @@ export default function Checkout({ navigate }) {
       setError('অনুগ্রহ করে বিস্তারিত ডেলিভারি ঠিকানা প্রদান করুন।');
       return;
     }
+    if (formData.paymentMethod === 'bKash / Nagad') {
+      if (!formData.bkashSenderNumber?.trim()) {
+        setError('অনুগ্রহ করে বিকাশ/নগদ প্রেরক নম্বরটি লিখুন।');
+        return;
+      }
+      if (!formData.trxId?.trim()) {
+        setError('অনুগ্রহ করে পেমেন্ট ট্রানজেকশন আইডি (TrxID) লিখুন।');
+        return;
+      }
+    }
 
     setLoading(true);
 
     try {
+      const notesWithPayment = formData.paymentMethod === 'bKash / Nagad'
+        ? `[বিকাশ/নগদ নম্বর: ${formData.bkashSenderNumber.trim()}, TrxID: ${formData.trxId.trim()}] ${formData.notes.trim()}`.trim()
+        : formData.notes.trim();
+
       const orderPayload = {
         customerName: formData.customerName.trim(),
         phone: formData.phone.trim(),
@@ -77,7 +93,7 @@ export default function Checkout({ navigate }) {
         district: formData.district,
         paymentMethod: formData.paymentMethod,
         shippingFee,
-        notes: formData.notes.trim(),
+        notes: notesWithPayment,
         items: cart.map((item) => ({
           productId: item.product._id,
           name: item.product.name,
@@ -266,6 +282,50 @@ export default function Checkout({ navigate }) {
               </select>
             </div>
           </div>
+
+          {formData.paymentMethod === 'bKash / Nagad' && (
+            <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 space-y-3 text-xs">
+              <div className="flex items-start gap-2 text-stone-800">
+                <span className="text-base leading-none">📱</span>
+                <div className="space-y-1">
+                  <p className="font-semibold text-stone-900">বিকাশ / নগদ পেমেন্ট নির্দেশনা:</p>
+                  <p className="text-stone-600 leading-relaxed">
+                    আমাদের বিকাশ/নগদ মার্চেন্ট অথবা পার্সোনাল নম্বর <span className="font-mono font-bold text-ethnic-red">01711-234567</span> এ Send Money অথবা Payment করুন। তারপর প্রেরক নম্বর ও TrxID প্রদান করুন।
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                    যে নম্বর থেকে টাকা পাঠিয়েছেন <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="tel"
+                    name="bkashSenderNumber"
+                    value={formData.bkashSenderNumber}
+                    onChange={handleInputChange}
+                    placeholder="যেমন: 01712345678"
+                    required={formData.paymentMethod === 'bKash / Nagad'}
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-ethnic-red bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-stone-700 mb-1">
+                    ট্রানজেকশন আইডি (TrxID) <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="trxId"
+                    value={formData.trxId}
+                    onChange={handleInputChange}
+                    placeholder="যেমন: 9J4K2L8M"
+                    required={formData.paymentMethod === 'bKash / Nagad'}
+                    className="w-full text-xs px-3 py-2 rounded-lg border border-stone-300 focus:outline-none focus:ring-1 focus:ring-ethnic-red uppercase font-mono bg-white"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           <div>
             <label className="block text-xs font-semibold text-stone-700 mb-1">
